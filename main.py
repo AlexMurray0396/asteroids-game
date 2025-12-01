@@ -4,6 +4,9 @@ from logger import log_state
 from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
+from logger import log_event
+import sys
+from shot import Shot
 
 def main():
     # print message to inform user that game is starting
@@ -21,11 +24,13 @@ def main():
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
     asteroids = pygame.sprite.Group()
+    shots = pygame.sprite.Group()
 
     # add object instances to appropriate object lists
     Player.containers = (updatable, drawable)
     Asteroid.containers = (updatable, drawable, asteroids)
     AsteroidField.containers = (updatable)
+    Shot.containers = (updatable, drawable, shots)
 
     # define initial time
     dt = 0
@@ -50,6 +55,12 @@ def main():
         # update updatable object data
         for item in updatable:
             item.update(dt)
+
+        for item in asteroids:
+            if item.collides_with(player):
+                log_event("player_hit")
+                print("Game over!")
+                sys.exit()
 
         # draw drawable objects
         for item in drawable:
